@@ -112,7 +112,7 @@ class ShopCard extends StatelessWidget {
 }
 
 final List<ShopItem> items = [
-  ShopItem("Lihat Produk", Icons.checklist, Colors.green),
-  ShopItem("Tambah Produk", Icons.add_shopping_cart, Colors.blue),
+  ShopItem("Lihat Item", Icons.checklist, Colors.green),
+  ShopItem("Tambah Item", Icons.add_shopping_cart, Colors.blue),
   ShopItem("Logout", Icons.logout, Colors.red),
 ];
