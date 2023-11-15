@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:faymart/widgets/left_drawer.dart';
+import 'package:faymart/widgets/shop_card.dart';
+import 'package:faymart/screens/shoplist_form.dart';
+
+
 
 
 class MyHomePage extends StatelessWidget {
@@ -15,6 +20,8 @@ class MyHomePage extends StatelessWidget {
 
         backgroundColor: Colors.indigo,
       ),
+      // Masukkan drawer sebagai parameter nilai drawer dari widget Scaffold
+      drawer: const LeftDrawer(),
       body: SingleChildScrollView(
         // Widget wrapper yang dapat discroll
         child: Padding(
@@ -56,15 +63,6 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
-
-class ShopItem {
-  final String name;
-  final IconData icon;
-  final Color color;
-
-  ShopItem(this.name, this.icon, this.color);
-}
-
 class ShopCard extends StatelessWidget {
   final ShopItem item;
 
@@ -74,7 +72,6 @@ class ShopCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: item.color,
-      // color: Colors.indigo,
       child: InkWell(
         // Area responsive terhadap sentuhan
         onTap: () {
@@ -83,6 +80,12 @@ class ShopCard extends StatelessWidget {
             ..hideCurrentSnackBar()
             ..showSnackBar(SnackBar(
                 content: Text("Kamu telah menekan tombol ${item.name}!")));
+
+          // Navigate ke route yang sesuai (tergantung jenis tombol)
+          if (item.name == "Tambah Item") {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const ShopFormPage()));
+          }
         },
         child: Container(
           // Container untuk menyimpan Icon dan Text
