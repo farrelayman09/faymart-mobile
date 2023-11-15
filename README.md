@@ -167,7 +167,316 @@ class ShopCard extends StatelessWidget {
 }
 ```
 
+***
+***
+
+# Tugas 8
+Nama: Farrel Ayman Abisatyo<br>
+Kelas: PBP F<br>
+NPM: 2206828916<br>
+
+## Jelaskan perbedaan antara Navigator.push() dan Navigator.pushReplacement(), disertai dengan contoh mengenai penggunaan kedua metode tersebut yang tepat!
+
+- Navigator.push() adalah sebuat method yang berfungsi untuk menggantikan halaman saat ini dengan halaman baru di atas tumpukan halaman dan membuatnya dapat ditumpuk di atas halaman saat ini. Dengan itu, method ini bisa diibaratkan sebagai method push stack dengan stacknya berupa halaman app. Contoh penggunaaannya:
+```
+if (item.name == "Tambah Produk") {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const ShopFormPage()));
+    }
+```
+
+- Navigator.pushReplacement() adalah sebuah method yang befungsi untuk menggantikan halaman saat ini dengan halaman baru di tumpukan halaman serta menghapus halaman saat ini dari tumpukan halaman. Halaman saat ini tidak dapat diakses kembali dengan menekan tombol kembali; pengguna langsung melanjutkan ke halaman baru. Dengan itu, method ini bisa diibaratkan sebagai pop dan push stack dengan stacknya berupa halaman app. Contoh penggunaannya:
+```
+onTap: () {
+        Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MyHomePage(),
+        ));
+    },
+```
 
 
+## Jelaskan masing-masing layout widget pada Flutter dan konteks penggunaannya masing-masing!
+Terdapat banyak sekali jenis layout widget pada Flutter. Berikut ini adalah beberapa yang sering digunakan:
+- Container: widget umum yang digunakan untuk mengelola tata letak dan dekorasi elemen. Ini dapat berfungsi sebagai wadah/kontainer untuk widget lainnya atau sebagai widget tunggal dengan properti seperti padding, margin, dan lainnya.
+- Column dan Row: Column digunakan untuk menempatkan widget secara vertikal, sementara Row digunakan untuk menempatkannya secara horizontal.
+- ListView: digunakan untuk menampilkan daftar elemen yang dapat di-scroll.
+- Stack: digunakan untuk menumpuk widget di atas satu sama lain.
+- Align: meng-align child-nya di dalam dirinya sendiri dan menyesuiakan ukurannya berdasarkan ukuran size child-nya
 
 
+## Sebutkan apa saja elemen input pada form yang kamu pakai pada tugas kali ini dan jelaskan mengapa kamu menggunakan elemen input tersebut!
+Pada form untuk menambahkan item, saya menggunakan:
+```
+String _name = "";
+int _price = 0;
+String _description = "";
+```
+Sementara itu saya meng-setState dengan menggunakan sintaks seperti ini untuk menerima input yang sesuai
+```_name = value!```, ```_price = int.parse(value!)```, serta ```_description = value!;```
+Saya menggunakan elemen input sedemikian karena name dan description perlu menampilkan value berupa teks/String, sedangkan price perlu menampilkan value berupa angka/int
+
+## Bagaimana penerapan clean architecture pada aplikasi Flutter?
+Clean architecture adalah blueprint untuk sistem modular, yang secara ketat mengikuti prinsip desain yang disebut separation of concerns. Secara garis besar, clean architecture di Flutter dapat dibagi menjadi 3 layers
+- **Feature**: Layer ini merupakan layer presentasi aplikasi. Ini adalah layer yang paling bergantung pada framework, karena berisi UI dan event handler UI.
+- **Domain**: Domain Layer adalah bagian paling dalam dari semua of the layers (no dependencies with other layers) dan mengandung Entities, Use Cases & Repository Interfaces. Domain layer akan ditulis semua dalam Dart tanpa elemen Flutter. Alasannya adalah karena domain sepatutnya hanya perlu mengatur dengan business logic dari application.
+- **Data**: Data layer merepresentasikan data layer dari aplikasi. Data module, yang merupakan bagian layer paling luar dari, bertanggung jawab untuk data retrieval. Hal ini bisa berupa API calls ke server atau local database. Layer ini juga berisi implementasi repositori.
+
+## Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial)
+1. Pertama, saya membuat berkas baru di lib dengan nama shoplist_form.dart dengan isi berupa tampilan serta event handler untuk form penambahan item. Berikut adalah kodenya
+```
+import 'package:flutter/material.dart';
+import 'package:faymart/widgets/left_drawer.dart';
+
+
+class ShopFormPage extends StatefulWidget {
+  const ShopFormPage({super.key});
+
+  @override
+  State<ShopFormPage> createState() => _ShopFormPageState();
+}
+
+class _ShopFormPageState extends State<ShopFormPage> {
+  final _formKey = GlobalKey<FormState>();
+  String _name = "";
+  int _price = 0;
+  String _description = "";
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(
+          child: Text(
+            'Form Tambah Item',
+          ),
+        ),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+      ),
+      drawer: const LeftDrawer(),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+            child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Nama Item",
+                    labelText: "Nama Item",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _name = value!;
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Nama tidak boleh kosong!";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Harga",
+                    labelText: "Harga",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _price = int.parse(value!);
+                      });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Harga tidak boleh kosong!";
+                    }
+                    if (int.tryParse(value) == null) {
+                      return "Harga harus berupa angka!";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Deskripsi",
+                    labelText: "Deskripsi",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _description = value!;
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Deskripsi tidak boleh kosong!";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all(Colors.indigo),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Item berhasil tersimpan'),
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Nama: $_name'),
+                                    Text('Harga: $_price'),
+                                    Text("Deskripsi: $_description"),
+                                  ],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                      _formKey.currentState!.reset();
+                    },
+                    child: const Text(
+                      "Save",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ]
+            ),
+        ),
+      ),
+    );
+
+
+  }
+}
+```
+Bisa dilihat bahwa saya meng-set input form sedemikian sesuai dengan konteks dari penambahan barang, yakni name, price, dan description. Setelah saya menerima input, saya akan meng-setState dengan input yang baru diterima. Setelah input form berhasil disimpan, saya menampilkan AlertDialog atau popup yang menandakan item telah ditambahkan beserta atribut-atributnya.
+
+
+2. Kedua, saya membuka lib dan membuat berkas baru, left_drawer.dart, yang berisi kode sebagai berikut:
+```
+import 'package:flutter/material.dart';
+import 'package:faymart/screens/menu.dart';
+import 'package:faymart/screens/shoplist_form.dart';
+
+
+class LeftDrawer extends StatelessWidget {
+  const LeftDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        children: [
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.indigo,
+            ),
+            child: Column(
+              children: [
+                Text(
+                  'Faymart',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Padding(padding: EdgeInsets.all(10)),
+                Text("Catat seluruh keperluan belanjamu di sini!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.home_outlined),
+            title: const Text('Halaman Utama'),
+            // Bagian redirection ke MyHomePage
+            onTap: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(),
+                  ));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add_shopping_cart),
+            title: const Text('Tambah Item'),
+            // Bagian redirection ke ShopFormPage
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const ShopFormPage()));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+Berkas dart ini berfungsi untuk menampilkan Drawer di kiri yang akan muncul/geser setelah dipencet. Bisa dilihat juga bahwa saya telah menambahkan method Navigator yang sesuai seperti push ataupun pushReplacement supaya halaman dapat berpindah dengan baik.
+
+
+3. Setelah itu, untuk mengimplementasikan architecture Flutter yang lebih modular, cuplikan kode di menu.dart yang mengatur Kelas ShopItem akan saya pindahkan ke berkas baru di lib yakni shop_card.dart.
+```
+import 'package:flutter/material.dart';
+
+class ShopItem {
+  final String name;
+  final IconData icon;
+  final Color color;
+
+  ShopItem(this.name, this.icon, this.color);
+}
+```
+
+4. Kemudian, saya merefactor juga berkas-berkas lain ke dalam package/direktori yang sesuai supaya lebih clean. Saya membuat package screens yang di dalamnya terdapat menu.dart dan shoplist_form.dart. Selain itu, saya membuat package widgets yang berisi left_drawer.dart serta shop_card.dart. Setelah itu selesai, saya menyesuaikan kembali sintaks import supaya merefer ke directory path yang benar.
