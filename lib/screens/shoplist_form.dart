@@ -1,6 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:faymart/widgets/left_drawer.dart';
+// ignore_for_file: use_build_context_synchronously
 
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:faymart/widgets/left_drawer.dart';
+import 'package:faymart/screens/menu.dart';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 class ShopFormPage extends StatefulWidget {
   const ShopFormPage({super.key});
@@ -14,14 +19,15 @@ class _ShopFormPageState extends State<ShopFormPage> {
   String _name = "";
   int _price = 0;
   String _description = "";
+
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Center(
-          child: Text(
-            'Form Tambah Item',
-          ),
+        title: const Text(
+          'Form Tambah Item',
         ),
         backgroundColor: Colors.indigo,
         foregroundColor: Colors.white,
@@ -30,7 +36,7 @@ class _ShopFormPageState extends State<ShopFormPage> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
-            child: Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
@@ -69,7 +75,7 @@ class _ShopFormPageState extends State<ShopFormPage> {
                   onChanged: (String? value) {
                     setState(() {
                       _price = int.parse(value!);
-                      });
+                    });
                   },
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -111,40 +117,36 @@ class _ShopFormPageState extends State<ShopFormPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all(Colors.indigo),
+                      backgroundColor: MaterialStateProperty.all(Colors.indigo),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Item berhasil tersimpan'),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Nama: $_name'),
-                                    Text('Harga: $_price'),
-                                    Text("Deskripsi: $_description"),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  child: const Text('OK'),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                        // Kirim ke Django dan tunggu respons
+                        final response = await request.postJson(
+                            "http://127.0.0.1:8000/create-flutter/",
+                            jsonEncode(<String, String>{
+                              'name': _name,
+                              'price': _price.toString(),
+                              'description': _description,
+                            }));
+                        if (response['status'] == 'success') {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("Item baru berhasil disimpan!"),
+                          ));
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyHomePage()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content:
+                            Text("Terdapat kesalahan, silakan coba lagi."),
+                          ));
+                        }
                       }
-                      _formKey.currentState!.reset();
                     },
                     child: const Text(
                       "Save",
@@ -153,12 +155,10 @@ class _ShopFormPageState extends State<ShopFormPage> {
                   ),
                 ),
               ),
-            ]
-            ),
+            ],
+          ),
         ),
       ),
     );
-
-
   }
 }
