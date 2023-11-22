@@ -19,6 +19,7 @@ class _ShopFormPageState extends State<ShopFormPage> {
   String _name = "";
   int _price = 0;
   String _description = "";
+  int _amount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -111,6 +112,32 @@ class _ShopFormPageState extends State<ShopFormPage> {
                   },
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Jumlah",
+                    labelText: "Jumlah",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _amount = int.parse(value!);
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Harga tidak boleh kosong!";
+                    }
+                    if (int.tryParse(value) == null) {
+                      return "Harga harus berupa angka!";
+                    }
+                    return null;
+                  },
+                ),
+              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
@@ -128,6 +155,7 @@ class _ShopFormPageState extends State<ShopFormPage> {
                               'name': _name,
                               'price': _price.toString(),
                               'description': _description,
+                              'amount': _amount.toString()
                             }));
                         if (response['status'] == 'success') {
                           ScaffoldMessenger.of(context)
