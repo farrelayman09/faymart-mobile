@@ -480,3 +480,88 @@ class ShopItem {
 ```
 
 4. Kemudian, saya merefactor juga berkas-berkas lain ke dalam package/direktori yang sesuai supaya lebih clean. Saya membuat package screens yang di dalamnya terdapat menu.dart dan shoplist_form.dart. Selain itu, saya membuat package widgets yang berisi left_drawer.dart serta shop_card.dart. Setelah itu selesai, saya menyesuaikan kembali sintaks import supaya merefer ke directory path yang benar.
+
+# Tugas 9
+
+Nama: Farrel Ayman Abisatyo<br>
+Kelas: PBP F<br>
+NPM: 2206828916<br>
+
+## Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? Jika iya, apakah hal tersebut lebih baik daripada membuat model sebelum melakukan pengambilan data JSON?
+Ya, kita bisa melakukan pengambilan data JSON tanpa membuat model terlebih dahulu, tergantung pada kebutuhan dan tujuan yang kita inginkan. Pengambilan data JSON tanpa membuat model mungkin lebih cocok untuk skenario di mana kita hanya perlu membaca dan mengakses data JSON tanpa melakukan analisis atau transformasi data yang kompleks. 
+
+## Jelaskan fungsi dari CookieRequest dan jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+Fungsi dari CookieRequest adalah untuk menyediakan akses ke data cookie yang dibutuhkan oleh berbagai bagian dari aplikasi. CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter agar komponen-komponen yang berbeda dapat mengakses dan menggunakan data cookie tersebut tanpa perlu membuat instance CookieRequest baru setiap kali. Membagikan instance CookieRequest ke semua komponen mempermudah koordinasi dan pertukaran data antar komponen dalam aplikasi sehingga meningkatkan efisiensi dan konsistensi dalam penggunaan data cookie di aplikasi Flutter.
+
+## Jelaskan mekanisme pengambilan data dari JSON hingga dapat ditampilkan pada Flutter.
+1. Mengirimkan GET Request ke url http://farrel-ayman-tugas.pbp.cs.ui.ac.id/json/ untuk mendapatkan JSON yang berisi list of Items.
+2. Menggunakan jsonDecode untuk mengubah http response body menjadi bentuk JSON.
+3. Membuat object Item menggunakan data JSON yang telah didapatkan kemudian menyimpannya dalam List<Item> list_product
+4. Menampilkan semua Item menggunakan ListView.builder(). Setiap Item ditampilkan menggunakan Card() yang dibungkus oleh InkWell().
+5. Jika suatu Item diklik, maka seluruh data Item tersebut akan dikirimkan ke halaman ShopFormPage() untuk kemudian ditampilkan semua item secara lebih detail.
+
+## Jelaskan mekanisme autentikasi dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+1. Pertama, dibuat objek request dengan CookieRequest yang telah diimpor
+2. Kemudian, di aplikasi, kita dapat meng-input username beserta password
+3. Lalu, username dan password tersebut dikirim dan masuk ke fungsi login_request
+4. Jika autentikasi berhasil maka akan diarahkan ke MyHomePage(), tetapi jika tidak, akan diarahkan ke AlertDialog
+
+## Daftar Widget pada Tugas ini beserta Kegunaannya
+1. MaterialPageRoute: Widget ini digunakan untuk memberikan efek animasi ketika berpindah antar page.
+2. Align: Widget ini digunakan untuk meng-align child-nya di dalam dirinya sendiri dan menyesuiakan ukurannya berdasarkan ukuran size child-nya
+3. Row: Widget ini digunakan untuk mengatur letak children widgetnya secara horizontal.
+4. Provider: Widget ini menyediakan objek atau data supaya dapat diakses oleh widget di bawahnya.
+5. ListView: Widget ini digunakan untuk mengatur letak children widgetnya dalam sebuah scrollable list secara vertikal.
+6. LeftDrawer: Widget untuk menampilkan drawer di bagian kiri pada halaman utama yang membesar ketika diklik.
+7. ElevatedButton: Widget untuk menampilkan tombol untuk memicu tindakan tertentu.
+8. TextFormField: Widget yang berfungsi menerima input teks dari pengguna.
+9. CircularProgressIndicator: Widget ini digunakan sebagai indikator loading ketika aplikasi sedang menunggu data dari server
+10. Navigator.push: Widget ini digunakan untuk berpindah page dalam bentuk push ke stack/page saat ini.
+
+## Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial).
+1. Pertama, saya mengaktifkan virtual environment
+2. Lalu, saya men-download packages yang dibutuhkan menggunakan command
+```
+flutter pub add provider
+flutter pub add pbp_django_auth
+```
+3. Setelah itu, saya memodifikasi main.dart menjadi sedemikian rupa
+```
+class MyApp extends StatelessWidget {
+    const MyApp({Key? key}) : super(key: key);
+
+    @override
+    Widget build(BuildContext context) {
+        return Provider(
+            create: (_) {
+                CookieRequest request = CookieRequest();
+                return request;
+            },
+            child: MaterialApp(
+                title: 'Flutter App'
+                theme: ThemeData(
+                    colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+                    useMaterial3: true,
+                ),
+                home: MyHomePage()),
+            ),
+        );
+    }
+}
+```
+4. Di package screens, saya membuat file login.dart yang berfungsi mengatur sistem autentikasi user yang ingin masuk ke aplikasi
+5. Lalu, saya membuat model custom untuk aplikasi flutter menggunakan website QuickType yang memudahkan pembuatan model tersebut dengan memasukkan data dari endpoint JSON dan membuat item.dart yang berisi model tersebut
+6. Kemudian, saya menambahkan dependensi flutter dengan ```flutter pub add http``` di terminal serta menambahkan kode berikut di AndroidManifest.xml
+```
+...
+    <application>
+    ...
+    </application>
+    <!-- Required to fetch data from the Internet. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+...
+```
+7. Lalu, saya memodifikasi file item_form.dart pada direktori screens agar dapat mengubah input yang diterima ke dalam JSON kemudian mengirimkannya ke server.
+8. Setelah itu, saya membuat file di screens, yakni list_item.dart yang berfungsi memproses endpoint yang disediakan sehingga dapat menampilkan item-item yang ada beserta informasinya.
+9. Kemudian, saya mengintegrasi Form FLutter di Django dengan membuat create_item_flutter di main.views.py projek Django serta menghubungakn shoplist_form.dart dengan CookieRequest
+10. Terakhir, saya membuat fungsi logout di authentication.views.py serta mengintegrasinya dengan Flutter di shop_card.dart
